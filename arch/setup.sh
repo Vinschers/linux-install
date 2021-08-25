@@ -106,7 +106,8 @@ check "VirtualBox environment?" 0 && setup_vb ; espaco
 ! $debug || check "Setup locale?" 1 && setup_locale ; espaco
 
 ! $debug || check "Setup localtime?" 1 && ln -sf /usr/share/zoneinfo/Brazil/East /etc/localtime ; espaco
-! $debug || check "Setup localtime?" 1 && install_x ; espaco
+
+! $debug || check "Install X?" 1 && install_x ; espaco
 
 ! $debug || check "Setup hostname?" 1 && echo "$hostname" > /etc/hostname ; espaco
 
