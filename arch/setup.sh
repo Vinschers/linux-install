@@ -38,7 +38,7 @@ setup_networkmanager () {
 }
 
 setup_grub () {
-    pacman -S --noconfirm grub
+    pacman -S --noconfirm grub parted
     espaco
     echo "Setting up grub menu..."
 
