@@ -1,0 +1,26 @@
+check () {
+    if [ "$2" == "1" ]
+    then
+        echo -n "$1 [Y/n] " >&2
+        read ans
+
+        [ "$ans" == "" ] || [ "$ans" == "Y" ] || [ "$ans" == "y" ]
+    else
+        echo -n "$1 [y/N] " >&2
+        read ans
+
+        ! [ "$ans" == "" ] || [ "$ans" == "N" ] || [ "$ans" == "n" ]
+    fi
+}
+
+install_yay () {
+    git clone https://aur.archlinux.org/yay-git.git
+    cd yay-git/
+    makepkg -si
+    cd ..
+    rm -rf yay-git/
+}
+
+check "Install yay?" 1 && install_yay
+
+mv ~/.bashrc.old ~/.bashrc
