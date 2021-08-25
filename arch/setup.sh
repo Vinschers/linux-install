@@ -73,6 +73,10 @@ setup_locale () {
     echo "LANG=en_US.UTF-8" > /etc/locale.conf
 }
 
+install_x () {
+    pacman -S --noconfirm xorg xorg-xinit xf86-video-intel noto-fonts
+}
+
 create_new_user () {
     echo -n "User name: "
     read user_name
@@ -102,6 +106,7 @@ check "VirtualBox environment?" 0 && setup_vb ; espaco
 ! $debug || check "Setup locale?" 1 && setup_locale ; espaco
 
 ! $debug || check "Setup localtime?" 1 && ln -sf /usr/share/zoneinfo/Brazil/East /etc/localtime ; espaco
+! $debug || check "Setup localtime?" 1 && install_x ; espaco
 
 ! $debug || check "Setup hostname?" 1 && echo "$hostname" > /etc/hostname ; espaco
 
