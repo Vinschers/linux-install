@@ -8,13 +8,13 @@ All configurations, dotfiles, themes and things that are usually set up after a 
 Before using any script, the creation and setup of a partition table must be done manually as well as mounting the root (/) partition to /mnt.
 This is done using `cfdisk` or any other tool you are more familiar with. Suppose the partitions /dev/sda1, /dev/sda2 and /dev/sda3 are
 created for boot, swap and root (/) respectively. In this case, you would run
-```sh
+```
 mkfs.fat -F32 /dev/sda1
 mkswap /dev/sda2
 mkfs.ext4 /dev/sda3
 
 swapon /dev/sda2
-mount /dev/sda1 /mnt
+mount /dev/sda3 /mnt
 ```
 Once the partition
 table is created and the drivers are mounted, just download the script of your choice and change its permissions so that you can run it.
