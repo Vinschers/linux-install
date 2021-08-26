@@ -23,4 +23,4 @@ install_yay () {
 
 check "Install yay?" 1 && install_yay
 
-mv ~/.bashrc.old ~/.bashrc
+sudo mv ~/.bashrc.old ~/.bashrc
