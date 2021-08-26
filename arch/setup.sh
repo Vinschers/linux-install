@@ -24,6 +24,11 @@ setup_vb () {
     systemctl enable vboxservice
 }
 
+setup_time_zone () {
+    ln -sf /usr/share/zoneinfo/Brazil/East /etc/localtime
+    hwclock --systohc
+}
+
 setup_network () {
     pacman -S --noconfirm networkmanager
     systemctl enable NetworkManager
@@ -89,10 +94,6 @@ hostname=$3
 
 check "VirtualBox environment?" 0 && setup_vb ; espaco
 
-setup_time_zone () {
-    ln -sf /usr/share/zoneinfo/Brazil/East /etc/localtime
-    hwclock --systohc
-}
 
 ! $debug || check "Setup localtime?" 1 && setup_time_zone ; espaco
 
