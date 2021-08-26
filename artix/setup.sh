@@ -21,18 +21,19 @@ check () {
 
 setup_vb () {
     pacman -S --noconfirm virtualbox-guest-utils
-    systemctl enable vboxservice
+    ln -s /etc/runit/sv/vboxservice /etc/runit/runsvdir/default
 }
 
 setup_network () {
-    pacman -S --noconfirm networkmanager
-    systemctl enable NetworkManager
+    pacman -S --noconfirm networkmanager networkmanager-runit connman-runit
 
     echo "$1" > /etc/hostname
 
     echo -e "127.0.0.1        localhost\n" > /etc/hosts
     echo -e "::1              localhost\n" >> /etc/hosts
     echo -e "127.0.1.1        $1.localdomain  $1" >> /etc/hosts
+
+    ln -s /etc/runit/sv/connmand /etc/runit/runsvdir/default
 }
 
 setup_grub () {
