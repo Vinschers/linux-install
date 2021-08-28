@@ -84,7 +84,7 @@ create_new_user () {
     passwd $user_name
 
     mv /home/$user_name/.bashrc /home/$user_name/.bashrc.old
-    cp ./install-yay /home/$user_name/.bashrc
+    cp ./bashrc.sh /home/$user_name/.bashrc
 }
 
 debug=$1
