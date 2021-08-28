@@ -38,14 +38,7 @@ setup_arch () {
 
     echo -e 'Starting setup...\n\n' &&
     ./setup.sh $1 $2 $3 &&
-
-    exit
 }
-
-unmount () {
-    umount -R /mnt
-}
-
 
 check "Debug mode?" 0 && debug=true || debug=false
 
@@ -62,8 +55,6 @@ read hostname
 ! $debug || check "Create fstab file?" 1 && create_fstab ; espaco
 
 export -f setup_arch
-! $debug || check "Clone full repository and run arch setup?" 1 && arch-chroot /mnt /bin/sh -c "setup_arch $debug $boot_partition $hostname" && unmount ; espaco
-
-! $debug || check "Shutdown now?" 1 && shutdown now ; espaco
+! $debug || check "Clone full repository and run arch setup?" 1 && arch-chroot /mnt /bin/sh -c "setup_arch $debug $boot_partition $hostname"; espaco
 
 echo "Reboot the computer and remove the installation media."
