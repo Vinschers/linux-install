@@ -60,6 +60,8 @@ setup_grub () {
 
         pacman -S --noconfirm efibootmgr dosfstools os-prober mtools
         grub-install --target=x86_64-efi --bootloader-id=grub_uefi --recheck
+	
+	echo "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub
     elif [ "$partition_label" == "msdos" ]
     then
         mount $boot_partition /boot
@@ -101,10 +103,10 @@ check "VirtualBox environment?" 0 && setup_vb ; espaco
 
 ! $debug || check "Setup Network configuration?" 1 && setup_network "$hostname" ; espaco
 
-! $debug || check "Install and setup grub?" 1 && setup_grub $boot_partition ; espaco
-
 ! $debug || check "Change root password?" 1 && passwd ; espaco
 
 ! $debug || check "Update sudoers file?" 1 && cat ./sudoers > /etc/sudoers ; espaco
 
 ! $debug || check "Create new user?" 1 && create_new_user ; espaco
+
+check "Install and setup grub?" 1 && setup_grub $boot_partition
