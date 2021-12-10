@@ -27,7 +27,7 @@ download_dotfiles () {
 	git --git-dir=$HOME/.dotfiles-git/ --work-tree=$HOME checkout
 	git --git-dir=$HOME/.dotfiles-git/ --work-tree=$HOME config --local status.showUntrackedFiles no
 
-	check "Run setup script?" 1 && $HOME/.scripts/setup_new_system/arch_setup.sh
+	check "Run setup script?" 1 && $HOME/.local/scripts/distro-hop/setup.sh
 }
 
 check "Install yay?" 1 && install_yay
