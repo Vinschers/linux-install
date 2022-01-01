@@ -28,7 +28,7 @@ run_pacstrap () {
 }
 
 create_fstab () {
-    genfstab -U /mnt
+    genfstab -U /mnt >> /mnt/etc/fstab
 }
 
 setup_arch () {
