@@ -28,6 +28,8 @@ download_dotfiles () {
 	git --git-dir=$HOME/.dotfiles-git/ --work-tree=$HOME config --local status.showUntrackedFiles no
 
 	check "Run setup script?" 1 && $HOME/.local/scripts/distro-hop/setup.sh
+
+    rm ~/.bash_profile
 }
 
 check "Install yay?" 1 && install_yay
