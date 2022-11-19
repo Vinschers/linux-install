@@ -14,11 +14,11 @@ check () {
 }
 
 install_yay () {
-    git clone https://aur.archlinux.org/yay-git.git
-    cd yay-git/
+    git clone https://aur.archlinux.org/yay.git
+    cd yay/
     makepkg -si
     cd ..
-    rm -rf yay-git/
+    rm -rf yay/
 }
 
 download_dotfiles () {
