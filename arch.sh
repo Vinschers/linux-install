@@ -37,7 +37,7 @@ setup_arch () {
     cd linux-install/arch/
 
     echo -e 'Starting setup...\n\n' &&
-    ./setup.sh $1 $2 $3
+    ./setup.sh "$1" "$2" "$3" "$4" "$5"
 }
 
 check "Debug mode?" 0 && debug=true || debug=false
