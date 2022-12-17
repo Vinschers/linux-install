@@ -79,9 +79,6 @@ setup_locale () {
 }
 
 create_new_user () {
-    echo -n "User name: "
-    read user_name
-
     useradd -mg wheel $user_name
     passwd $user_name
 
@@ -92,9 +89,11 @@ create_new_user () {
 debug=$1
 boot_partition=$2
 hostname=$3
+user_name=$4
+vm=$5
 
 
-check "VirtualBox environment?" 0 && setup_vb ; espaco
+$vm && setup_vb ; espaco
 
 
 ! $debug || check "Setup localtime?" 1 && setup_time_zone ; espaco
@@ -109,4 +108,4 @@ check "VirtualBox environment?" 0 && setup_vb ; espaco
 
 ! $debug || check "Create new user?" 1 && create_new_user ; espaco
 
-check "Install and setup grub?" 1 && setup_grub $boot_partition
+! $debug || check "Install and setup grub?" 1 && setup_grub $boot_partition
