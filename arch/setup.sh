@@ -86,11 +86,11 @@ create_new_user () {
     cp ./bashrc.sh /home/$user_name/.bashrc
 }
 
-debug=$1
-boot_partition=$2
-hostname=$3
-user_name=$4
-vm=$5
+debug="$1"
+boot_partition="$2"
+hostname="$3"
+user_name="$4"
+vm="$5"
 
 
 $vm && setup_vb ; espaco

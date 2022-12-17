@@ -59,6 +59,6 @@ read user_name
 ! $debug || check "Create fstab file?" 1 && create_fstab ; espaco
 
 export -f setup_arch
-! $debug || check "Clone full repository and run arch setup?" 1 && arch-chroot /mnt /bin/sh -c "setup_arch $debug $boot_partition $hostname $user_name $vm"; espaco
+! $debug || check "Clone full repository and run arch setup?" 1 && arch-chroot /mnt /bin/sh -c "setup_arch '$debug' '$boot_partition' '$hostname' '$user_name' '$vm'"; espaco
 
 echo "Reboot the computer and remove the installation media."
