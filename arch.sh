@@ -24,7 +24,7 @@ set_time () {
 }
 
 run_pacstrap () {
-    pacstrap /mnt base base-devel linux linux-firmware vim git lsb-release accountsservice
+    pacstrap /mnt base base-devel linux linux-firmware vim git lsb-release
 }
 
 create_fstab () {
