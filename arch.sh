@@ -24,7 +24,7 @@ set_time () {
 }
 
 run_pacstrap () {
-    pacman -Sy archlinux-keyring
+    sudo pacman -Sy archlinux-keyring
     pacstrap /mnt base base-devel linux linux-firmware vim git lsb-release
 }
 
