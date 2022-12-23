@@ -25,7 +25,7 @@ set_time () {
 
 run_pacstrap () {
     sudo pacman --noconfirm -Sy archlinux-keyring
-    pacstrap /mnt base base-devel linux linux-firmware vim git lsb-release
+    pacstrap /mnt base base-devel linux linux-firmware vim git lsb-release accountsservice
 }
 
 create_fstab () {

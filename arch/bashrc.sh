@@ -1,35 +1,37 @@
-check () {
-    if [ "$2" == "1" ]
-    then
-        echo -n "$1 [Y/n] " >&2
-        read ans
+#!/bin/bash
 
-        [ "$ans" == "" ] || [ "$ans" == "Y" ] || [ "$ans" == "y" ]
-    else
-        echo -n "$1 [y/N] " >&2
-        read ans
+check() {
+	if [ "$2" == "1" ]; then
+		echo -n "$1 [Y/n] " >&2
+		read ans
 
-        ! [ "$ans" == "" ] || [ "$ans" == "N" ] || [ "$ans" == "n" ]
-    fi
+		[ "$ans" == "" ] || [ "$ans" == "Y" ] || [ "$ans" == "y" ]
+	else
+		echo -n "$1 [y/N] " >&2
+		read ans
+
+		! [ "$ans" == "" ] || [ "$ans" == "N" ] || [ "$ans" == "n" ]
+	fi
 }
 
-install_yay () {
-    git clone https://aur.archlinux.org/yay.git
-    cd yay/
-    makepkg -si
-    cd ..
-    rm -rf yay/
+install_yay() {
+	git clone https://aur.archlinux.org/yay.git
+	cd yay/ || exit 1
+	makepkg -si
+	cd ..
+	rm -rf yay/
 }
 
-download_dotfiles () {
-	git clone --bare https://github.com/Vinschers/dotfiles.git $HOME/.dotfiles-git
-	git --git-dir=$HOME/.dotfiles-git/ --work-tree=$HOME checkout 2>&1 | egrep "\s+\." | awk {'print $1'} | xargs -I{} rm $HOME/{}
-	git --git-dir=$HOME/.dotfiles-git/ --work-tree=$HOME checkout
-	git --git-dir=$HOME/.dotfiles-git/ --work-tree=$HOME config --local status.showUntrackedFiles no
+download_dotfiles() {
+	git clone --bare https://github.com/Vinschers/dotfiles.git "$HOME/.dotfiles-git"
+	git --git-dir="$HOME/.dotfiles-git/" --work-tree="$HOME" checkout 2>&1 | grep -E "\s+\." | awk '{print $1}' | xargs -I{} rm "$HOME/{}"
+	git --git-dir="$HOME/.dotfiles-git/" --work-tree="$HOME" checkout
+	git --git-dir="$HOME/.dotfiles-git/" --work-tree="$HOME" config --local status.showUntrackedFiles no
 
-	check "Run setup script?" 1 && $HOME/.local/scripts/setup/setup.sh
+	rm "$HOME/.bash_profile" "$HOME/.bashrc.old"
 
-    rm ~/.bash_profile
+	source "$HOME/.profile"
+	check "Run setup script?" 1 && "$SCRIPTS_DIR/setup/setup.sh"
 }
 
 check "Install yay?" 1 && install_yay
