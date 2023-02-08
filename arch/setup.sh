@@ -44,13 +44,13 @@ setup_grub() {
 
     uuid="$(blkid -o value -s UUID "$main_partition")"
 
-	[ -n "$main_partition" ] && sed -i "s|^GRUB_CMDLINE_LINUX=\"|GRUB_CMDLINE_LINUX=\"cryptdevice=UUID=$uuid:main root=/dev/main/root|g" /etc/default/grub
+	[ -n "$main_partition" ] && sed -i "s|^GRUB_CMDLINE_LINUX=\"|GRUB_CMDLINE_LINUX=\"cryptdevice=UUID=$uuid:main root=/dev/main/root resume=/dev/main/swap|g" /etc/default/grub
 	[ -n "$main_partition" ] && sed -i "s/^#GRUB_ENABLE_CRYPTODISK=y/GRUB_ENABLE_CRYPTODISK=y/g" /etc/default/grub
 
 	echo "Setting up grub menu..."
 
 	pacman -S --noconfirm efibootmgr dosfstools os-prober mtools
-	grub-install --target=x86_64-efi --bootloader-id=grub_uefi --recheck --efi-directory=/boot
+	grub-install --target=x86_64-efi --bootloader-id=grub_uefi --recheck
 
 	echo "GRUB_DISABLE_OS_PROBER=false" >>/etc/default/grub
 

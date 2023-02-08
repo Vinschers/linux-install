@@ -101,7 +101,7 @@ mount_partitions () {
     root_partition="$3"
 
     mount "$root_partition" /mnt
-    mount -m "$boot_partition" /mnt/boot
+    mount -m "$boot_partition" /mnt/boot/EFI
     swapon -L swap
 }
 
