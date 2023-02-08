@@ -160,8 +160,8 @@ if check "Create partitions?" 1; then
 
         encrypt_disk "$main_partition"
 
-        swap_partition="/dev/mapper/main/swap"
-        root_partition="/dev/mapper/main/root"
+        swap_partition="/dev/main/swap"
+        root_partition="/dev/main/root"
 
         encrypt=true
     else
