@@ -74,8 +74,7 @@ encrypt_disk () {
     total_ram="$(free --giga | awk '/^Mem:/{print $2}')GB"
     [ "$total_ram" = "0GB" ] && total_ram="1GB"
 
-    modprobe dm-crypt
-
+    cryptsetup --verbose --cipher aes-xts-plain64 --key-size 512 --hash sha512 --iter-time 5000 --use-random luksFormat "$main_partition"
     cryptsetup -vy luksFormat --type luks2 "$main_partition"
     cryptsetup luksOpen "$main_partition" lvm
 
@@ -114,7 +113,7 @@ run_pacstrap() {
 	sudo pacman --noconfirm -Sy archlinux-keyring
 
     if $encrypt; then
-	    pacstrap /mnt base base-devel linux linux-firmware vim git lsb-release accountsservice grub "$processor-ucode" mkinitcpio lvm2
+	    pacstrap /mnt base base-devel linux linux-firmware vim git lsb-release accountsservice grub "$processor-ucode" mkinitcpio
     else
 	    pacstrap /mnt base base-devel linux linux-firmware vim git lsb-release accountsservice grub "$processor-ucode"
     fi
