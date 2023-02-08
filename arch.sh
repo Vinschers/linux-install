@@ -146,11 +146,11 @@ read -r user_name
 
 encrypt=false
 
-if check "Create partitions?" 1; then
+if ! $debug || check "Create partitions?" 1; then
     printf "Device: "
     read -r device
 
-    if check "Encrypt disk" 1; then
+    if ! $debug || check "Encrypt disk" 1; then
         fdisk_encrypt_cmds | fdisk "$device"
 
         sleep 1
