@@ -74,7 +74,9 @@ encrypt_disk () {
     total_ram="$(free --giga | awk '/^Mem:/{print $2}')GB"
     [ "$total_ram" = "0GB" ] && total_ram="1GB"
 
-    cryptsetup -c aes-xts-plain64 -y -s 512 luksFormat "$main_partition"
+    modprobe dm-crypt
+
+    cryptsetup -vy luksFormat --type luks2 "$main_partition"
     cryptsetup luksOpen "$main_partition" lvm
 
     pvcreate /dev/mapper/lvm
@@ -101,10 +103,7 @@ mount_partitions () {
     root_partition="$3"
 
     mount "$root_partition" /mnt
-
-    mkdir -p /mnt/boot/EFI
-    mount "$boot_partition" /mnt/boot/EFI
-
+    mount -m "$boot_partition" /mnt/boot
     swapon -L swap
 }
 
