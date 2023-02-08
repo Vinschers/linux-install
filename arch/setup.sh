@@ -115,4 +115,6 @@ espaco
 ! $debug || check "Install and setup grub?" 1 && setup_grub "$main_partition"
 espaco
 
-[ -n "$main_partition" ] && change_mkinitcpio
+if [ -n "$main_partition" ]; then
+    ! $debug || check "Change mkinitcpio" 1 && change_mkinitcpio
+fi
