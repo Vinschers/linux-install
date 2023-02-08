@@ -117,5 +117,5 @@ espaco
 espaco
 
 if [ -n "$main_partition" ]; then
-    ! $debug || check "Change mkinitcpio" 1 && change_mkinitcpio
+    ! $debug || check "Change mkinitcpio?" 1 && change_mkinitcpio
 fi
