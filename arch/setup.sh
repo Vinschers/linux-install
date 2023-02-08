@@ -42,7 +42,8 @@ setup_network() {
 setup_grub() {
 	main_partition="$1"
 
-	[ -n "$main_partition" ] && sed -i "s|^GRUB_CMDLINE_LINUX_DEFAULT=\"|GRUB_CMDLINE_LINUX_DEFAULT=\"cryptdevice=$main_partition:main root=/dev/mapper/main-root |g" /etc/default/grub && sed -i "s/^#GRUB_ENABLE_CRYPTODISK=y/GRUB_ENABLE_CRYPTODISK=y/g" /etc/default/grub
+	[ -n "$main_partition" ] && sed -i "s|^GRUB_CMDLINE_LINUX_DEFAULT=\"|GRUB_CMDLINE_LINUX_DEFAULT=\"cryptdevice=$main_partition:main root=/dev/mapper/main-root |g" /etc/default/grub
+	# [ -n "$main_partition" ] && sed -i "s/^#GRUB_ENABLE_CRYPTODISK=y/GRUB_ENABLE_CRYPTODISK=y/g" /etc/default/grub
 
 	echo "Setting up grub menu..."
 
