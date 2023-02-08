@@ -144,6 +144,8 @@ if check "Create partitions?" 1; then
     if check "Encrypt disk" 1; then
         fdisk_encrypt_cmds | fdisk "$device"
 
+        sleep 1
+
         boot_partition="/dev/$(lsblk -o KNAME -n "$device" | sed -n '2p')"
         main_partition="/dev/$(lsblk -o KNAME -n "$device" | sed -n '3p')"
 
