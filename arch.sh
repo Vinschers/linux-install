@@ -143,10 +143,11 @@ if check "Create partitions?" 1; then
     if check "Encrypt disk" 1; then
         fdisk_encrypt_cmds | fdisk "$device"
 
-        main_partition="$(lsblk -o KNAME -n "$device" | sed -n '3p')"
+        boot_partition="/dev/$(lsblk -o KNAME -n "$device" | sed -n '2p')"
+        main_partition="/dev/$(lsblk -o KNAME -n "$device" | sed -n '3p')"
+
         encrypt_disk "$main_partition"
 
-        boot_partition="$(lsblk -o KNAME -n "$device" | sed -n '2p')"
         swap_partition="/dev/mapper/main-swap"
         root_partition="/dev/mapper/main-root"
 
