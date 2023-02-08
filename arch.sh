@@ -74,8 +74,8 @@ encrypt_disk () {
     total_ram="$(free --giga | awk '/^Mem:/{print $2}')GB"
     [ "$total_ram" = "0GB" ] && total_ram="1GB"
 
-    cryptsetup luksFormat --type luks1 --use-random -S 1 -s 512 -h sha512 -i 5000 "$main_partition"
-    cryptsetup luksOpen "$main_partition" lvm
+    cryptsetup luksFormat "$main_partition"
+    cryptsetup open "$main_partition" lvm
 
     pvcreate /dev/mapper/lvm
     vgcreate main /dev/mapper/lvm
@@ -101,7 +101,7 @@ mount_partitions () {
     root_partition="$3"
 
     mount "$root_partition" /mnt
-    mount -m "$boot_partition" /mnt/efi
+    mount -m "$boot_partition" /mnt/boot
     swapon -L swap
 }
 
