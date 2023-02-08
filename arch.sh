@@ -72,6 +72,7 @@ fdisk_encrypt_cmds () {
 encrypt_disk () {
     main_partition="$1"
     total_ram="$(free --giga | awk '/^Mem:/{print $2}')GB"
+    [ "$total_ram" = "0GB" ] && total_ram="1GB"
 
     cryptsetup -c aes-xts-plain64 -y -s 512 luksFormat "$main_partition"
     cryptsetup luksOpen "$main_partition" lvm
