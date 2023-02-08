@@ -81,7 +81,7 @@ change_mkinitcpio() {
 	modified_hooks="${default_hooks%?} encrypt lvm2)"
 	modified_hooks="$(echo "$modified_hooks" | sed 's/( /(/g')"
 
-	sed -i "s/^$default_hooks/$modified_hooks/g" /etc/mkinitcpio.conf
+	sed -i "s/^$default_hooks/HOOKS=(base udev autodetect modconf kms keyboard keymap consolefont block encrypt lvm2 filesystems fsck)/g" /etc/mkinitcpio.conf
 
 	mkinitcpio -p linux
 }
@@ -113,9 +113,9 @@ espaco
 ! $debug || check "Create new user?" 1 && create_new_user
 espaco
 
-! $debug || check "Install and setup grub?" 1 && setup_grub "$main_partition"
-espaco
-
 if [ -n "$main_partition" ]; then
     ! $debug || check "Change mkinitcpio?" 1 && change_mkinitcpio
 fi
+
+! $debug || check "Install and setup grub?" 1 && setup_grub "$main_partition"
+espaco
