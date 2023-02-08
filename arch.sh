@@ -133,7 +133,19 @@ setup_arch() {
 	printf 'Starting setup...\n\n\n' && ./setup.sh "$1" "$2" "$3" "$4" "$5"
 }
 
+
+printf "Processor (intel/amd): "
+read -r processor
+
 check "Debug mode?" 0 && debug=true || debug=false
+
+check "VirtualBox environment?" 0 && vm=true || vm=false
+
+printf "Hostname: "
+read -r hostname
+
+printf "User name: "
+read -r user_name
 
 encrypt=false
 
@@ -173,17 +185,6 @@ else
     read -r root_partition
 fi
 espaco
-
-check "VirtualBox environment?" 0 && vm=true || vm=false
-
-printf "Hostname: "
-read -r hostname
-
-printf "User name: "
-read -r user_name
-
-printf "Processor (intel/amd): "
-read -r processor
 
 
 ! $debug || check "Create filesystems" 1 && create_fs "$boot_partition" "$swap_partition" "$root_partition"
