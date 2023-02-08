@@ -74,7 +74,7 @@ encrypt_disk () {
     total_ram="$(free --giga | awk '/^Mem:/{print $2}')GB"
     [ "$total_ram" = "0GB" ] && total_ram="1GB"
 
-    cryptsetup luksFormat "$main_partition"
+    cryptsetup luksFormat --type luks1 "$main_partition"
     cryptsetup open "$main_partition" lvm
 
     pvcreate /dev/mapper/lvm
