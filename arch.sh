@@ -74,7 +74,7 @@ encrypt_disk () {
     total_ram="$(free --giga | awk '/^Mem:/{print $2}')GB"
     [ "$total_ram" = "0GB" ] && total_ram="1GB"
 
-    cryptsetup luksFormat --type luks1 "$main_partition"
+    cryptsetup luksFormat --type luks1 --use-random -S 1 -s 512 -h sha512 -i 5000 "$main_partition"
     cryptsetup luksOpen "$main_partition" lvm
 
     pvcreate /dev/mapper/lvm
@@ -101,7 +101,7 @@ mount_partitions () {
     root_partition="$3"
 
     mount "$root_partition" /mnt
-    mount -m "$boot_partition" /mnt/boot/EFI
+    mount -m "$boot_partition" /mnt/efi
     swapon -L swap
 }
 
@@ -112,7 +112,7 @@ run_pacstrap() {
 	sudo pacman --noconfirm -Sy archlinux-keyring
 
     if $encrypt; then
-	    pacstrap /mnt base base-devel linux linux-firmware vim git lsb-release accountsservice grub "$processor-ucode" mkinitcpio
+	    pacstrap /mnt base base-devel linux linux-firmware vim git lsb-release accountsservice grub "$processor-ucode" lvm2 mkinitcpio
     else
 	    pacstrap /mnt base base-devel linux linux-firmware vim git lsb-release accountsservice grub "$processor-ucode"
     fi
@@ -160,8 +160,8 @@ if check "Create partitions?" 1; then
 
         encrypt_disk "$main_partition"
 
-        swap_partition="/dev/mapper/main-swap"
-        root_partition="/dev/mapper/main-root"
+        swap_partition="/dev/mapper/main/swap"
+        root_partition="/dev/mapper/main/root"
 
         encrypt=true
     else
