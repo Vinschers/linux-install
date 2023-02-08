@@ -43,7 +43,7 @@ setup_grub() {
 	main_partition="$1"
 
 	[ -n "$main_partition" ] && sed -i "s|^GRUB_CMDLINE_LINUX=\"|GRUB_CMDLINE_LINUX=\"cryptdevice=$main_partition:main|g" /etc/default/grub
-	# [ -n "$main_partition" ] && sed -i "s/^#GRUB_ENABLE_CRYPTODISK=y/GRUB_ENABLE_CRYPTODISK=y/g" /etc/default/grub
+	[ -n "$main_partition" ] && sed -i "s/^#GRUB_ENABLE_CRYPTODISK=y/GRUB_ENABLE_CRYPTODISK=y/g" /etc/default/grub
 
 	echo "Setting up grub menu..."
 
@@ -71,17 +71,11 @@ create_new_user() {
 }
 
 change_mkinitcpio() {
-	default_modules="$(grep "^MODULES=" /etc/mkinitcpio.conf)"
-	modified_modules="${default_modules%?} ext4)"
-	modified_modules="$(echo "$modified_modules" | sed 's/( /(/g')"
-
-	sed -i "s/^$default_modules/$modified_modules/g" /etc/mkinitcpio.conf
-
 	default_hooks="$(grep "^HOOKS=" /etc/mkinitcpio.conf)"
 	modified_hooks="${default_hooks%?} encrypt lvm2)"
 	modified_hooks="$(echo "$modified_hooks" | sed 's/( /(/g')"
 
-	sed -i "s/^$default_hooks/HOOKS=(base udev autodetect modconf kms keyboard keymap consolefont block encrypt filesystems fsck)/g" /etc/mkinitcpio.conf
+	sed -i "s/^$default_hooks/HOOKS=(base udev autodetect modconf kms keyboard keymap consolefont block encrypt lvm2 filesystems fsck)/g" /etc/mkinitcpio.conf
 
 	mkinitcpio -p linux
 }

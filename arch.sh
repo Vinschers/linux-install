@@ -74,7 +74,7 @@ encrypt_disk () {
     total_ram="$(free --giga | awk '/^Mem:/{print $2}')GB"
     [ "$total_ram" = "0GB" ] && total_ram="1GB"
 
-    cryptsetup --verbose --cipher aes-xts-plain64 --key-size 512 --hash sha512 --iter-time 5000 --use-random luksFormat "$main_partition"
+    cryptsetup luksFormat --type luks1 "$main_partition"
     cryptsetup luksOpen "$main_partition" lvm
 
     pvcreate /dev/mapper/lvm
