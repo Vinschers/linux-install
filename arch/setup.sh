@@ -42,11 +42,11 @@ setup_network() {
 setup_grub() {
 	main_partition="$1"
 
-    uuid="$(blkid -o value -s UUID "$main_partition")"
+	uuid="$(blkid -o value -s UUID "$main_partition")"
 
 	[ -n "$main_partition" ] && sed -i "s/^#GRUB_ENABLE_CRYPTODISK=y/GRUB_ENABLE_CRYPTODISK=y/g" /etc/default/grub
 	[ -n "$main_partition" ] && sed -i "s/^#GRUB_DISABLE_OS_PROBER=false/GRUB_DISABLE_OS_PROBER=false/g" /etc/default/grub
-	[ -n "$main_partition" ] && sed -i "s|^GRUB_CMDLINE_LINUX=\"|GRUB_CMDLINE_LINUX=\"cryptdevice=UUID=$uuid:main root=/dev/main/root resume=/dev/main/swap|g" /etc/default/grub
+	[ -n "$main_partition" ] && sed -i "s|^GRUB_CMDLINE_LINUX=\"|GRUB_CMDLINE_LINUX=\"cryptdevice=$main_partition:main root=/dev/main/root resume=/dev/main/swap cryptkey=rootfs:/root/secrets/crypto_keyfile.bin|g" /etc/default/grub
 
 	echo "Setting up grub menu..."
 
@@ -55,8 +55,6 @@ setup_grub() {
 
 	pacman -S --noconfirm ntfs-3g
 	grub-mkconfig -o /boot/grub/grub.cfg
-
-    # chmod 700 /boot
 }
 
 setup_locale() {
@@ -74,15 +72,15 @@ create_new_user() {
 }
 
 change_mkinitcpio() {
- #    mkdir /root/secrets && chmod 700 /root/secrets
- #    head -c 64 /dev/urandom > /root/secrets/crypto_keyfile.bin && chmod 600 /root/secrets/crypto_keyfile.bin
- #    cryptsetup -v luksAddKey -i 1 "$main_partition" /root/secrets/crypto_keyfile.bin
-	#
- #    default_files="$(grep "^FILES=" /etc/mkinitcpio.conf)"
-	# modified_files="${default_files%?} /root/secrets/crypto_keyfile.bin)"
-	# modified_files="$(echo "$modified_files" | sed 's/( /(/g')"
-	#
- #    sed -i "s|^$default_files|$modified_files|g" /etc/mkinitcpio.conf
+	mkdir /root/secrets && chmod 700 /root/secrets
+	head -c 64 /dev/urandom >/root/secrets/crypto_keyfile.bin && chmod 600 /root/secrets/crypto_keyfile.bin
+	cryptsetup -v luksAddKey -i 1 "$main_partition" /root/secrets/crypto_keyfile.bin
+
+	default_files="$(grep "^FILES=" /etc/mkinitcpio.conf)"
+	modified_files="${default_files%?} /root/secrets/crypto_keyfile.bin)"
+	modified_files="$(echo "$modified_files" | sed 's/( /(/g')"
+
+	sed -i "s|^$default_files|$modified_files|g" /etc/mkinitcpio.conf
 
 	default_hooks="$(grep "^HOOKS=" /etc/mkinitcpio.conf)"
 	modified_hooks="${default_hooks%?} encrypt lvm2)"
@@ -115,8 +113,8 @@ espaco
 espaco
 
 if [ -n "$main_partition" ]; then
-    ! $debug || check "Change mkinitcpio?" 1 && change_mkinitcpio
-    espaco
+	! $debug || check "Change mkinitcpio?" 1 && change_mkinitcpio
+	espaco
 fi
 
 ! $debug || check "Install and setup grub?" 1 && setup_grub "$main_partition"
