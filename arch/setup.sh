@@ -82,11 +82,13 @@ change_mkinitcpio() {
 
 	sed -i "s|^$default_files|$modified_files|g" /etc/mkinitcpio.conf
 
-	default_hooks="$(grep "^HOOKS=" /etc/mkinitcpio.conf)"
-	modified_hooks="${default_hooks%?} encrypt lvm2)"
-	modified_hooks="$(echo "$modified_hooks" | sed 's/( /(/g')"
+	sed -i "s/block filesystems/block encrypt lvm2 filesystems/" /etc/mkinitcpio.conf
+	
+	default_modules="$(grep "^MODULES=" /etc/mkinitcpio.conf)"
+	modified_modules="${default_modules%?} dm_mod dm_crypt ext4 sha256 sha512)"
+	modified_modules="$(echo "$modified_modules" | sed 's/( /(/g')"
 
-	sed -i "s/^$default_hooks/HOOKS=(base udev autodetect modconf kms keyboard keymap consolefont block encrypt lvm2 filesystems fsck)/g" /etc/mkinitcpio.conf
+	sed -i "s|^$default_modules|$modified_modules|g" /etc/mkinitcpio.conf
 
 	mkinitcpio -p linux
 }
