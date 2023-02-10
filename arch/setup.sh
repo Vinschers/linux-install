@@ -90,7 +90,7 @@ setup_grub() {
 
 	pacman -S --noconfirm efibootmgr dosfstools os-prober mtools ntfs-3g
 
-	grub-install --target=x86_64-efi --bootloader-id=grub --recheck
+	grub-install --target=x86_64-efi --bootloader-id=grub --efi-directory=/boot --recheck
 	grub-mkconfig -o /boot/grub/grub.cfg
 }
 
