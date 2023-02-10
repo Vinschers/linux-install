@@ -94,7 +94,7 @@ setup_grub() {
 }
 
 install_extra() {
-	pacman -S --noconfirm archlinux-keyring lsb-release accountsservice
+	pacman -S --noconfirm archlinux-keyring lsb-release
 }
 
 debug="$1"
