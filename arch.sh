@@ -108,7 +108,7 @@ mount_partitions () {
 run_pacstrap() {
     processor="$1"
 
-	pacstrap /mnt base base-devel linux linux-firmware vim git grub cryptsetup lvm2 "$processor-ucode"
+	pacstrap /mnt base base-devel linux linux-firmware vim git grub cryptsetup lvm2 lsb-release "$processor-ucode"
 }
 
 create_fstab() {

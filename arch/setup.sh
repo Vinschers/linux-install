@@ -81,10 +81,6 @@ setup_grub() {
 	grub-mkconfig -o /boot/grub/grub.cfg
 }
 
-install_extra() {
-	pacman -S --noconfirm archlinux-keyring lsb-release
-}
-
 debug="$1"
 main_partition="$2"
 root_partition="$3"
@@ -121,5 +117,3 @@ espaco
 
 ! $debug || check "Create new user?" 1 && create_new_user
 espaco
-
-! $debug || check "Install extra packages?" 1 && install_extra
