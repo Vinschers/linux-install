@@ -74,7 +74,7 @@ encrypt_disk () {
     total_ram="$(free --giga | awk '/^Mem:/{print $2}')GB"
     [ "$total_ram" = "0GB" ] && total_ram="1GB"
 
-    cryptsetup luksFormat --type luks1 --iter-time 64 "$main_partition"
+    cryptsetup luksFormat "$main_partition"
     cryptsetup open "$main_partition" lvm
 
     pvcreate /dev/mapper/lvm
@@ -101,21 +101,14 @@ mount_partitions () {
     root_partition="$3"
 
     mount "$root_partition" /mnt
-    mount -m "$boot_partition" /mnt/boot/EFI
+    mount -m "$boot_partition" /mnt/boot
     swapon -L swap
 }
 
 run_pacstrap() {
     processor="$1"
-    encrypt=$2
 
-	sudo pacman --noconfirm -Sy archlinux-keyring
-
-    if $encrypt; then
-	    pacstrap /mnt base base-devel linux linux-firmware vim git lsb-release accountsservice grub "$processor-ucode" lvm2 mkinitcpio
-    else
-	    pacstrap /mnt base base-devel linux linux-firmware vim git lsb-release accountsservice grub "$processor-ucode"
-    fi
+	pacstrap /mnt base base-devel linux linux-firmware vim git grub cryptsetup lvm2 "$processor-ucode"
 }
 
 create_fstab() {
@@ -144,8 +137,6 @@ read -r hostname
 printf "User name: "
 read -r user_name
 
-encrypt=false
-
 if ! $debug || check "Create partitions?" 1; then
     printf "Device: "
     read -r device
@@ -160,10 +151,8 @@ if ! $debug || check "Create partitions?" 1; then
 
         encrypt_disk "$main_partition"
 
-        swap_partition="/dev/main/swap"
-        root_partition="/dev/main/root"
-
-        encrypt=true
+        swap_partition="/dev/mapper/main-swap"
+        root_partition="/dev/mapper/main-root"
     else
         fdisk_nonencrypt_cmds | fdisk "$device"
 
@@ -196,14 +185,14 @@ espaco
 espaco
 
 
-! $debug || check "Run pacstrap command?" 1 && run_pacstrap "$processor" $encrypt
+! $debug || check "Run pacstrap command?" 1 && run_pacstrap "$processor"
 espaco
 
 ! $debug || check "Create fstab file?" 1 && create_fstab
 espaco
 
 export -f setup_arch
-! $debug || check "Clone full repository and run arch setup?" 1 && arch-chroot /mnt /bin/sh -c "setup_arch '$debug' '$main_partition' '$hostname' '$user_name' '$vm'"
+! $debug || check "Clone full repository and run arch setup?" 1 && arch-chroot /mnt /bin/sh -c "setup_arch '$debug' '$main_partition' '$root_partition' '$swap_partition '$hostname' '$user_name' '$vm'"
 espaco
 
 echo "Reboot the computer and remove the installation media."
