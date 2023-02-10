@@ -192,7 +192,7 @@ espaco
 espaco
 
 export -f setup_arch
-! $debug || check "Clone full repository and run arch setup?" 1 && arch-chroot /mnt /bin/sh -c "setup_arch '$debug' '$main_partition' '$root_partition' '$swap_partition '$hostname' '$user_name' '$vm'"
+! $debug || check "Clone full repository and run arch setup?" 1 && arch-chroot /mnt /bin/sh -c "setup_arch '$debug' '$main_partition' '$root_partition' '$swap_partition' '$hostname' '$user_name' '$vm'"
 espaco
 
 echo "Reboot the computer and remove the installation media."
