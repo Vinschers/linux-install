@@ -77,9 +77,9 @@ encrypt_disk () {
     cryptsetup luksFormat "$main_partition"
     cryptsetup open "$main_partition" lvm
 
+
     pvcreate /dev/mapper/lvm
     vgcreate main /dev/mapper/lvm
-
 
     lvcreate -L "$total_ram" -n swap main
     lvcreate -l 100%FREE -n root main
@@ -151,8 +151,8 @@ if ! $debug || check "Create partitions?" 1; then
 
         encrypt_disk "$main_partition"
 
-        swap_partition="/dev/mapper/main-swap"
-        root_partition="/dev/mapper/main-root"
+        root_partition="/dev/main/root"
+        swap_partition="/dev/main/swap"
     else
         fdisk_nonencrypt_cmds | fdisk "$device"
 

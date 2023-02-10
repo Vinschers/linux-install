@@ -78,8 +78,8 @@ setup_grub() {
 	root_partition="$2"
 	swap_partition="$3"
 
-	uuid="$(blkid -o value -s UUID "$main_partition")"
-    kernel_arguments="cryptdevice=$main_partition:main root=$root_partition resume=$swap_partition"
+    main_uuid="$(blkid -o value -s UUID "$main_partition")"
+    kernel_arguments="cryptdevice=UUID=$main_uuid:main root=$root_partition"
     # kernel_arguments="$kernel_arguments cryptkey=rootfs:/root/secrets/crypto_keyfile.bin"
 
 	[ -n "$main_partition" ] && sed -i "s/^#GRUB_DISABLE_OS_PROBER=false/GRUB_DISABLE_OS_PROBER=false/g" /etc/default/grub
