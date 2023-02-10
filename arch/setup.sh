@@ -59,17 +59,6 @@ create_new_user() {
 
 change_mkinitcpio() {
 	sed -i "s/block filesystems/block encrypt lvm2 filesystems/" /etc/mkinitcpio.conf
-
-	# mkdir /root/secrets && chmod 700 /root/secrets
-	# head -c 64 /dev/urandom >/root/secrets/crypto_keyfile.bin && chmod 600 /root/secrets/crypto_keyfile.bin
-	# cryptsetup -v luksAddKey -i 1 "$main_partition" /root/secrets/crypto_keyfile.bin
-	#
-	# default_files="$(grep "^FILES=" /etc/mkinitcpio.conf)"
-	# modified_files="${default_files%?} /root/secrets/crypto_keyfile.bin)"
-	# modified_files="$(echo "$modified_files" | sed 's/( /(/g')"
-	#
-	# sed -i "s|^$default_files|$modified_files|g" /etc/mkinitcpio.conf
-
 	mkinitcpio -p linux
 }
 
@@ -79,11 +68,9 @@ setup_grub() {
 	swap_partition="$3"
 
     main_uuid="$(blkid -o value -s UUID "$main_partition")"
-    kernel_arguments="cryptdevice=UUID=$main_uuid:main root=$root_partition"
-    # kernel_arguments="$kernel_arguments cryptkey=rootfs:/root/secrets/crypto_keyfile.bin"
+    kernel_arguments="cryptdevice=$main_partition:main root=$root_partition resume=$swap_partition"
 
 	[ -n "$main_partition" ] && sed -i "s/^#GRUB_DISABLE_OS_PROBER=false/GRUB_DISABLE_OS_PROBER=false/g" /etc/default/grub
-	# [ -n "$main_partition" ] && sed -i "s/^#GRUB_ENABLE_CRYPTODISK=y/GRUB_ENABLE_CRYPTODISK=y/g" /etc/default/grub
 	[ -n "$main_partition" ] && sed -i "s|^GRUB_CMDLINE_LINUX=\"|GRUB_CMDLINE_LINUX=\"$kernel_arguments|g" /etc/default/grub
 
 	echo "Setting up grub menu..."
@@ -118,7 +105,7 @@ espaco
 ! $debug || check "Setup Network configuration?" 1 && setup_network "$hostname"
 espaco
 
-! $debug || check "Update sudoers file?" 1 && sed -i "s|^# %wheel ALL=(ALL) ALL|%wheel ALL=(ALL) ALL|g" /etc/sudoers
+! $debug || check "Update sudoers file?" 1 && sed -i 's|^# %wheel ALL=(ALL:ALL) ALL|%wheel ALL=(ALL:ALL) ALL|g' /etc/sudoers
 espaco
 
 if [ -n "$main_partition" ]; then

@@ -120,7 +120,7 @@ setup_arch() {
 	chmod -R 777 linux-install/
 	cd linux-install/arch/ || exit 1
 
-	printf 'Starting setup...\n\n\n' && ./setup.sh "$1" "$2" "$3" "$4" "$5" "$6" "$7"
+	printf 'Starting setup...\n\n\n' && ./setup.sh $@
 }
 
 
