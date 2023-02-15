@@ -31,7 +31,7 @@ download_dotfiles() {
 	rm "$HOME/.bash_profile" "$HOME/.bashrc.old"
 
 	source "$HOME/.profile"
-	check "Run setup script?" 1 && "$SCRIPTS_DIR/setup/setup.sh"
+	check "Run setup script?" 1 && "$SCRIPTS_DIR/setup/setup.sh" && rm -f "$HOME/.bashrc"
 }
 
 check "Install yay?" 1 && install_yay
