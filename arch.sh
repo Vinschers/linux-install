@@ -22,91 +22,90 @@ set_time() {
 	timedatectl set-ntp true
 }
 
-fdisk_nonencrypt_cmds () {
-    total_ram="$(free --giga | awk '/^Mem:/{print $2}')GB"
+fdisk_nonencrypt_cmds() {
+	total_ram="$(free --giga | awk '/^Mem:/{print $2}')GB"
 
-    echo "g"            # Clear new GPT partition table
+	echo "g" # Clear new GPT partition table
 
-    echo "n"            # Create new partition
-    echo "1"            # Partition number 1
-    echo ""             # Default: start at the beginning of disk
-    echo "+512M"        # 512 MiB boot partition
-    echo "t"            # Change partition type
-    echo "1"            # EFI partition
+	echo "n"     # Create new partition
+	echo "1"     # Partition number 1
+	echo ""      # Default: start at the beginning of disk
+	echo "+512M" # 512 MiB boot partition
+	echo "t"     # Change partition type
+	echo "1"     # EFI partition
 
-    echo "n"            # Create new partition
-    echo "2"            # Partition number 2
-    echo ""             # Default: start immediately after preceding partition
-    echo "+$total_ram"  # Swap the size of total RAM available
-    echo "t"            # Change partition type
-    echo "19"           # Swap partition
+	echo "n"           # Create new partition
+	echo "2"           # Partition number 2
+	echo ""            # Default: start immediately after preceding partition
+	echo "+$total_ram" # Swap the size of total RAM available
+	echo "t"           # Change partition type
+	echo "19"          # Swap partition
 
-    echo "n"            # Create new partition
-    echo "3"            # Partition number 3
-    echo ""             # Default: start immediately after preceding partition
-    echo ""             # Default: extend partition to end of disk
+	echo "n" # Create new partition
+	echo "3" # Partition number 3
+	echo ""  # Default: start immediately after preceding partition
+	echo ""  # Default: extend partition to end of disk
 
-    echo "p"            # Print the in-memory partition table
-    echo "w"            # Write partition table
+	echo "p" # Print the in-memory partition table
+	echo "w" # Write partition table
 }
 
-fdisk_encrypt_cmds () {
-    echo "g"            # Clear new GPT partition table
+fdisk_encrypt_cmds() {
+	echo "g" # Clear new GPT partition table
 
-    echo "n"            # Create new partition
-    echo "1"            # Partition number 1
-    echo ""             # Default: start at the beginning of disk
-    echo "+512M"        # 512 MiB boot partition
-    echo "t"            # Change partition type
-    echo "1"            # EFI partition
+	echo "n"     # Create new partition
+	echo "1"     # Partition number 1
+	echo ""      # Default: start at the beginning of disk
+	echo "+512M" # 512 MiB boot partition
+	echo "t"     # Change partition type
+	echo "1"     # EFI partition
 
-    echo "n"            # Create new partition
-    echo "2"            # Partition number 2
-    echo ""             # Default: start immediately after preceding partition
-    echo ""             # Default: extend partition to end of disk
+	echo "n" # Create new partition
+	echo "2" # Partition number 2
+	echo ""  # Default: start immediately after preceding partition
+	echo ""  # Default: extend partition to end of disk
 
-    echo "p"            # Print the in-memory partition table
-    echo "w"            # Write partition table
+	echo "p" # Print the in-memory partition table
+	echo "w" # Write partition table
 }
 
-encrypt_disk () {
-    main_partition="$1"
-    total_ram="$(free --giga | awk '/^Mem:/{print $2}')GB"
-    [ "$total_ram" = "0GB" ] && total_ram="1GB"
+encrypt_disk() {
+	main_partition="$1"
+	total_ram="$(free --giga | awk '/^Mem:/{print $2}')GB"
+	[ "$total_ram" = "0GB" ] && total_ram="1GB"
 
-    cryptsetup luksFormat "$main_partition"
-    cryptsetup open "$main_partition" lvm
+	cryptsetup luksFormat "$main_partition"
+	cryptsetup open "$main_partition" lvm
 
+	pvcreate /dev/mapper/lvm
+	vgcreate main /dev/mapper/lvm
 
-    pvcreate /dev/mapper/lvm
-    vgcreate main /dev/mapper/lvm
-
-    lvcreate -L "$total_ram" -n swap main
-    lvcreate -l 100%FREE -n root main
+	lvcreate -L "$total_ram" -n swap main
+	lvcreate -l 100%FREE -n root main
 }
 
-create_fs () {
-    boot_partition="$1"
-    swap_partition="$2"
-    root_partition="$3"
+create_fs() {
+	boot_partition="$1"
+	swap_partition="$2"
+	root_partition="$3"
 
-    mkfs.fat -F32 -n BOOT "$boot_partition"
-    mkswap -L swap "$swap_partition"
-    mkfs.ext4 -L root "$root_partition"
+	mkfs.fat -F32 -n BOOT "$boot_partition"
+	mkswap -L swap "$swap_partition"
+	mkfs.ext4 -L root "$root_partition"
 }
 
-mount_partitions () {
-    boot_partition="$1"
-    swap_partition="$2"
-    root_partition="$3"
+mount_partitions() {
+	boot_partition="$1"
+	swap_partition="$2"
+	root_partition="$3"
 
-    mount "$root_partition" /mnt
-    mount -m "$boot_partition" /mnt/boot
-    swapon -L swap
+	mount "$root_partition" /mnt
+	mount -m "$boot_partition" /mnt/boot
+	swapon -L swap
 }
 
 run_pacstrap() {
-    processor="$1"
+	processor="$1"
 
 	pacstrap /mnt base base-devel linux linux-firmware vim git grub cryptsetup lvm2 lsb-release "$processor-ucode"
 }
@@ -123,7 +122,6 @@ setup_arch() {
 	printf 'Starting setup...\n\n\n' && ./setup.sh $@
 }
 
-
 printf "Processor (intel/amd): "
 read -r processor
 
@@ -137,53 +135,57 @@ read -r hostname
 printf "User name: "
 read -r user_name
 
-if ! $debug || check "Create partitions?" 1; then
-    printf "Device: "
-    read -r device
+if check "Encrypt disk?" 1; then
+	if check "Create partitions?" 1; then
+		printf "Device: "
+		read -r device
 
-    if ! $debug || check "Encrypt disk" 1; then
-        fdisk_encrypt_cmds | fdisk "$device"
+		fdisk_encrypt_cmds | fdisk "$device"
 
-        sleep 1
+		sleep 1
 
-        boot_partition="/dev/$(lsblk -o KNAME -n "$device" | sed -n '2p')"
-        main_partition="/dev/$(lsblk -o KNAME -n "$device" | sed -n '3p')"
+		boot_partition="/dev/$(lsblk -o KNAME -n "$device" | sed -n '2p')"
+		main_partition="/dev/$(lsblk -o KNAME -n "$device" | sed -n '3p')"
+	else
+		printf "Boot partition: "
+		read -r boot_partition
 
-        encrypt_disk "$main_partition"
+		printf "Main partition: "
+		read -r main_partition
+	fi
 
-        root_partition="/dev/main/root"
-        swap_partition="/dev/main/swap"
-    else
-        fdisk_nonencrypt_cmds | fdisk "$device"
+	encrypt_disk "$main_partition"
 
-        boot_partition="$(lsblk -o KNAME -n "$device" | sed -n '2p')"
-        swap_partition="$(lsblk -o KNAME -n "$device" | sed -n '3p')"
-        root_partition="$(lsblk -o KNAME -n "$device" | sed -n '4p')"
-    fi
+	root_partition="/dev/main/root"
+	swap_partition="/dev/main/swap"
 else
-    printf "Boot partition: "
-    read -r boot_partition
+	if check "Create partitions?" 1; then
+		fdisk_nonencrypt_cmds | fdisk "$device"
 
-    printf "Swap partition: "
-    read -r swap_partition
+		boot_partition="$(lsblk -o KNAME -n "$device" | sed -n '2p')"
+		swap_partition="$(lsblk -o KNAME -n "$device" | sed -n '3p')"
+		root_partition="$(lsblk -o KNAME -n "$device" | sed -n '4p')"
+	else
+		printf "Boot partition: "
+		read -r boot_partition
 
-    printf "Root partition: "
-    read -r root_partition
+		printf "Swap partition: "
+		read -r swap_partition
+
+		printf "Root partition: "
+		read -r root_partition
+	fi
 fi
 espaco
-
 
 ! $debug || check "Create filesystems" 1 && create_fs "$boot_partition" "$swap_partition" "$root_partition"
 espaco
 
-
 ! $debug || check "Mount partitions" 1 && mount_partitions "$boot_partition" "$swap_partition" "$root_partition"
 espaco
 
-
 ! $debug || check "Setup time?" 1 && set_time
 espaco
-
 
 ! $debug || check "Run pacstrap command?" 1 && run_pacstrap "$processor"
 espaco
