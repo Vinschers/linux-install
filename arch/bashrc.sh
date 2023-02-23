@@ -23,10 +23,8 @@ install_yay() {
 }
 
 download_dotfiles() {
-	sudo pacman -S --noconfirm --needed openssh
-	
 	mkdir -p "$HOME/.config/dotfiles"
-	git clone --bare git@github.com:Vinschers/dotfiles.git "$HOME/.config/dotfiles/.dotfiles-git"
+	git clone --bare https://github.com/Vinschers/dotfiles.git "$HOME/.config/dotfiles/.dotfiles-git"
 	git --git-dir="$HOME/.config/dotfiles/.dotfiles-git/" --work-tree="$HOME" checkout 2>&1 | grep -E "\s+\." | awk '{print $1}' | xargs -I{} rm "$HOME/{}"
 	git --git-dir="$HOME/.config/dotfiles/.dotfiles-git/" --work-tree="$HOME" checkout
 	git --git-dir="$HOME/.config/dotfiles/.dotfiles-git/" --work-tree="$HOME" config --local status.showUntrackedFiles no
