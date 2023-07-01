@@ -15,7 +15,11 @@ check() {
 }
 
 setup() {
-	curl -s "https://raw.githubusercontent.com/Vinschers/dotfiles/master/.config/setup/setup.sh" | /bin/sh
+	curl -O "https://raw.githubusercontent.com/Vinschers/dotfiles/master/.config/setup/setup.sh"
+    chmod +x setup.sh
+    mkdir -p "$HOME/.config/setup"
+    mv setup.sh "$HOME/.config/setup"
+    "$HOME/.config/setup/setup.sh"
 }
 
 check "Run setup script?" 1 && setup
